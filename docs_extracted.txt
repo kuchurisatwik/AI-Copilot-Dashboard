@@ -1,0 +1,1035 @@
+Trader Copilot AI
+Technical Architecture Document (TAD)
+Version 1.0
+1. Purpose
+This document defines the technical architecture, system boundaries, technology stack, database design principles, API domains, and implementation structure for Trader Copilot AI.
+This document should be used together with the SOC (System Overview & Control) document.
+2. Product Summary
+Trader Copilot AI is a SaaS platform that helps traders improve:
+Risk Management
+Position Sizing
+Trade Selection
+Strategy Validation
+Behavioral Discipline
+The platform is NOT:
+Auto Trading Software
+Signal Generator
+Trade Execution Engine
+The platform IS:
+Decision Support System
+Trading Intelligence Platform
+Risk Management Assistant
+AI Trading Coach
+3. Technology Stack
+Frontend
+Framework:
+Next.js
+Language:
+TypeScript
+Styling:
+Tailwind CSS
+UI Components:
+shadcn/ui
+Charts:
+TradingView Lightweight Charts
+Recharts
+Authentication:
+JWT
+Backend
+Framework:
+FastAPI
+Language:
+Python 3.12+
+ORM:
+SQLAlchemy
+Validation:
+Pydantic
+Authentication:
+JWT
+Migrations:
+Alembic
+Database
+Primary Database:
+PostgreSQL
+Purpose:
+Users
+Trades
+Strategies
+Analytics
+Market Context
+AI Insights
+Storage
+MVP:
+Local File Storage
+Future:
+AWS S3
+Used For:
+Chart Screenshots
+Generated Reports
+Future Components
+Not MVP:
+Redis
+Celery
+Kafka
+Kubernetes
+Microservices
+4. High-Level Architecture
+                Next.js Frontend
+                        |
+                        |
+                   REST APIs
+                        |
+                        |
+                FastAPI Backend
+                        |
+| | | | |
+ 
+uth Trades Risk Analytics AI
+ 
+odule Module Engine Engine Module
+ 
+|
+ 
+|
+ 
+PostgreSQL
+ 
+|
+ 
+|
+ 
+Screenshot Store
+5. Architecture Principles
+Principle 1
+Use Modular Monolith Architecture.
+Do NOT use microservices.
+Principle 2
+Business Logic must remain in Services.
+API Routes should remain thin.
+Principle 3
+AI must never perform calculations.
+AI only consumes analytics outputs.
+Principle 4
+Risk Engine is the source of truth.
+AI cannot override risk rules.
+Principle 5
+Auto-capture wherever possible.
+Reduce manual user input.
+6. Module Boundaries
+Auth Module
+Responsibilities:
+Register
+Login
+Refresh Tokens
+Profile
+Owns:
+Users
+Strategy Module
+Responsibilities:
+Create Strategy
+Edit Strategy
+Delete Strategy
+Owns:
+Strategy Definitions
+Risk Preferences
+Trade Module
+Responsibilities:
+Create Trade
+Update Trade
+Close Trade
+Trade Lifecycle
+Owns:
+Trades
+Trade Journal
+Risk Engine
+Responsibilities:
+Position Sizing
+Risk Calculations
+Exposure Calculations
+Outputs:
+Risk Amount
+Position Size
+Reward Risk Ratio
+Rule Engine
+Responsibilities:
+Validate Trades
+Apply Risk Constraints
+Outputs:
+PASS
+WARNING
+BLOCK
+Market Context Module
+Responsibilities:
+Capture:
+ATR
+RSI
+VWAP
+Volume
+Trend
+Session
+Purpose:
+Create market fingerprints.
+Analytics Module
+Responsibilities:
+Generate:
+Win Rate
+Profit Factor
+Drawdown
+Expectancy
+Strategy Performance
+No AI logic.
+AI Module
+Responsibilities:
+Generate:
+Trade Validation
+Similar Trade Analysis
+Behavioral Coaching
+Strategy Intelligence
+Consumes:
+Analytics Data
+Market Context
+Trade History
+7. Backend Folder Structure
+backend/
+├── app/
+│ ├── api/
+│ │ ├── auth/
+│ │ ├── strategies/
+│ │ ├── trades/
+│ │ ├── risk/
+│ │ ├── analytics/
+│ │ ├── ai/
+│ │ └── market_context/
+│ │
+│ ├── core/
+│ │ ├── config.py
+│ │ ├── database.py
+│ │ └── security.py
+│ │
+│ ├── models/
+│ ├── schemas/
+│ ├── repositories/
+│ ├── services/
+│ └── main.py
+8. Frontend Structure
+frontend/
+├── app/
+├── components/
+├── features/
+│ ├── dashboard/
+│ ├── trades/
+│ ├── risk/
+│ ├── analytics/
+│ ├── journal/
+│ └── ai/
+├── services/
+├── hooks/
+├── types/
+└── utils/
+9. Core API Domains
+Authentication
+/api/auth
+Responsibilities:
+Register
+Login
+Logout
+Strategies
+/api/strategies
+Responsibilities:
+CRUD
+Trades
+/api/trades
+Responsibilities:
+Trade Lifecycle
+Risk
+/api/risk
+Responsibilities:
+Risk Calculations
+Validation
+Analytics
+/api/analytics
+Responsibilities:
+Performance Metrics
+Market Context
+/api/market-context
+Responsibilities:
+Market Fingerprints
+AI
+/api/ai
+Responsibilities:
+Recommendations
+Insights
+10. Data Flow
+User Selects Strategy
+ 
+|
+ 
+▼
+ 
+Trade Creation
+ 
+|
+ 
+▼
+ 
+Risk Engine
+ 
+|
+ 
+▼
+ 
+Rule Engine
+ 
+|
+ 
+▼
+ 
+Market Context Capture
+ 
+|
+ 
+▼
+ 
+Store Trade
+ 
+|
+ 
+▼
+ 
+Analytics Engine
+ 
+|
+ 
+▼
+ 
+AI Analysis
+ 
+|
+ 
+▼
+ 
+Dashboard Output
+11. Screenshot Architecture
+For every trade:
+Capture:
+Entry:
+Trade Timeframe
+Higher Timeframe
+Exit:
+Trade Timeframe
+Higher Timeframe
+Store:
+File Path
+Trade ID
+Timestamp
+Future AI Vision:
+Pattern Recognition
+Trend Classification
+Setup Similarity
+12. AI Architecture
+AI Input Sources:
+Trade History
+Market Context
+Risk Metrics
+Behavioral Data
+Analytics Outputs
+AI Must Not Consume Raw Data Directly.
+Pipeline:
+Raw Data
+ 
+|
+ 
+▼
+ 
+Analytics Engine
+ 
+|
+ 
+▼
+ 
+Feature Extraction
+ 
+|
+ 
+▼
+ 
+AI Layer
+ 
+|
+ 
+▼
+ 
+Recommendation
+13. Frontend Pages
+Dashboard
+Purpose:
+ 
+Overall account health
+New Trade
+Purpose:
+ 
+Trade planning
+Trade Review
+Purpose:
+ 
+Trade validation
+Journal
+Purpose:
+ 
+Historical trades
+Analytics
+Purpose:
+ 
+Performance analysis
+Strategy Insights
+Purpose:
+ 
+Strategy intelligence
+AI Coach
+Purpose:
+ 
+Recommendations and coaching
+Settings
+Purpose:
+ 
+User configuration
+14. MVP Deliverables
+Phase 1
+Authentication
+Trade Entry
+Risk Engine
+Phase 2
+Rule Engine
+Journal
+Analytics
+Phase 3
+Market Context Capture
+Screenshot Storage
+Phase 4
+AI Insights
+Similar Trade Analysis
+Phase 5
+Broker Integrations
+Phase 6
+Live Updates
+15. Non-Functional Requirements
+Performance:
+API Response < 300ms
+Security:
+JWT Authentication
+Password Hashing
+Scalability:
+Modular Architecture
+Maintainability:
+Service Layer Pattern
+Reliability:
+Transaction-safe database operations
+Observability:
+Structured Logging
+16. Success Criteria
+The platform successfully helps traders answer:
+What should I risk?
+Is this trade valid?
+Has this setup worked before?
+Is my position size correct?
+What mistakes am I repeating?
+How can I improve my strategy performance?
+without becoming an automated trading system.
+Trader Copilot AI
+System Overview & Control (SOC) Document
+Version: 1.0
+1. Product Vision
+Trader Copilot AI is a SaaS platform designed to help traders improve decision-making through:
+Risk management
+Position sizing
+Strategy validation
+Market context analysis
+Behavioral coaching
+Historical trade intelligence
+The platform does not execute trades automatically.
+The platform acts as an AI-powered trading assistant that helps users make better trading decisions before, during, and after trades.
+2. Core Objectives
+Primary Goals:
+Reduce avoidable losses
+Improve position sizing discipline
+Improve risk management
+Improve trade selection quality
+Identify profitable market conditions
+Identify unprofitable market conditions
+Build trader-specific intelligence over time
+Success Metric:
+The platform should help traders make better decisions through data-driven validation rather than market prediction.
+3. Product Principles
+Principle 1
+Risk management always overrides AI suggestions.
+Principle 2
+AI may recommend.
+AI may never force.
+Principle 3
+Data drives decisions.
+Not opinions.
+Principle 4
+Auto-capture whenever possible.
+Manual entry should be minimized.
+Principle 5
+If insufficient data exists:
+The system must explicitly state:
+“Insufficient data available.”
+Never fabricate confidence.
+4. User Inputs
+Required:
+Strategy Type
+Optional:
+Trade Notes
+Trade Thesis
+Market Order / Limit Order
+5. Auto-Captured Data
+System automatically captures:
+Symbol
+Current Price
+Entry Price
+Stop Loss
+Take Profit
+Risk Amount
+Position Size
+Reward Risk Ratio
+Trade Time
+Session
+Market Conditions
+Volatility Metrics
+6. Core Modules
+Module A
+Trade Capture
+Responsibilities:
+Create trades
+Store trade metadata
+Manage trade lifecycle
+States:
+Draft
+Open
+Closed
+Module B
+Risk Engine
+Responsibilities:
+Position sizing
+Risk calculation
+Exposure calculation
+Outputs:
+Risk Amount
+Position Size
+Maximum Loss
+Reward Risk Ratio
+Module C
+Rule Engine
+Responsibilities:
+Validate trades against user rules.
+Default Rules:
+Max Risk Per Trade
+Daily Loss Limit
+Weekly Loss Limit
+Consecutive Loss Limits
+Outputs:
+PASS
+WARNING
+BLOCK
+Module D
+Market Context Engine
+Captures:
+ATR
+RSI
+VWAP
+Volume
+Trend
+Session
+Market Regime
+Purpose:
+Create market fingerprints for AI learning.
+Module E
+Trade Journal
+Stores:
+Trade Data
+Market Context
+Risk Metrics
+Screenshots
+Outcomes
+Purpose:
+Create long-term learning dataset.
+Module F
+Analytics Engine
+Calculates:
+Win Rate
+Profit Factor
+Expectancy
+Drawdown
+Strategy Performance
+Session Performance
+No AI involvement.
+Pure statistical calculations.
+Module G
+AI Intelligence Layer
+Provides:
+Trade Validation
+Similar Trade Analysis
+Risk Coaching
+Strategy Intelligence
+Behavioral Analysis
+AI never performs calculations directly.
+AI consumes processed analytics.
+7. Market Context Capture
+For every trade:
+Store:
+Trade Timeframe Data
+Higher Timeframe Data
+Indicators
+Market Structure
+Capture:
+Entry:
+Trade Timeframe Screenshot
+Higher Timeframe Screenshot
+Exit:
+Trade Timeframe Screenshot
+Higher Timeframe Screenshot
+Purpose:
+Enable future chart intelligence.
+8. Data Categories
+Trade Data
+Entry
+Exit
+SL
+TP
+Quantity
+Result
+Risk Data
+Risk %
+Drawdown
+Exposure
+Daily Loss
+Market Data
+ATR
+RSI
+VWAP
+Trend
+Volume
+Behavioral Data
+Rule Violations
+Overtrading
+Early Exits
+Revenge Trading
+Screenshot Data
+Entry Images
+Exit Images
+Timeframe Images
+Outcome Data
+PnL
+Win/Loss
+R Multiple
+9. AI Learning Strategy
+Phase 1:
+Generic recommendations.
+No personalization.
+Phase 2:
+Strategy-level learning.
+Phase 3:
+Trader-specific learning.
+Phase 4:
+Pattern recognition using screenshots and chart structure.
+10. Data Sufficiency Policy
+If:
+Less than 7 days of usage
+ 
+OR
+Insufficient strategy history
+AI must return:
+“Not enough historical data available for a reliable recommendation.”
+Fallback:
+Use generic risk management guidance.
+11. Technology Stack
+Frontend:
+Next.js
+TypeScript
+TailwindCSS
+shadcn/ui
+Backend:
+FastAPI
+Database:
+PostgreSQL
+Storage:
+Screenshot Storage
+Future:
+Redis
+WebSockets
+Broker Integrations
+12. API Domains
+Auth
+Authentication
+Authorization
+Strategies
+CRUD
+Trades
+Trade Lifecycle
+Risk
+Risk Calculations
+Market Context
+Market Capture
+Analytics
+Statistical Analysis
+AI
+Recommendations
+Broker Sync
+Future Integration
+13. Frontend Pages
+Dashboard
+Trade Entry
+Risk Analysis
+Trade Journal
+Analytics
+Strategy Insights
+AI Coach
+Settings
+14. MVP Scope
+Must Build:
+✓ Authentication
+✓ Trade Entry
+✓ Risk Engine
+✓ Rule Engine
+✓ Trade Journal
+✓ Analytics Dashboard
+✓ Market Context Storage
+✓ AI Summary Layer
+Not In MVP:
+✗ Mobile App
+✗ Real-Time Execution
+✗ Auto Trading
+✗ Multi-Account Support
+✗ Redis
+✗ Microservices
+✗ Advanced ML Models
+15. Long-Term Vision
+Trader Copilot AI becomes a personalized intelligence system that answers:
+Should I take this trade?
+How much should I risk?
+Is this setup historically profitable?
+What mistakes am I repeating?
+Which market conditions favor my strategy?
+How can I improve account growth while reducing drawdowns?
+End Goal:
+Build a data-driven AI trading coach focused on discipline, risk management, strategy validation, and long-term profitability.
+Trader Copilot AI
+Development Roadmap Document (DRD)
+Version 1.0
+Purpose
+This roadmap defines the implementation sequence for Trader Copilot AI.
+The objective is to:
+Build a usable MVP quickly
+Avoid overengineering
+Validate product-market fit
+Collect trading data early
+Introduce AI only after meaningful data exists
+Important Rule:
+Do NOT build all features simultaneously.
+Each phase must be completed, tested, and approved before moving to the next phase.
+Development Philosophy
+Build in this order:
+Capture Data
+Validate Risk
+Generate Analytics
+Learn From Data
+Introduce AI
+Add Broker Integrations
+AI is not Phase 1.
+Data collection is Phase 1.
+Phase 0 — Foundation
+Goal:
+Prepare project infrastructure.
+Deliverables:
+Backend:
+FastAPI setup
+PostgreSQL setup
+SQLAlchemy
+Alembic migrations
+JWT Authentication
+Frontend:
+Next.js setup
+TypeScript
+TailwindCSS
+shadcn/ui
+Infrastructure:
+Docker
+Environment management
+Logging
+Success Criteria:
+Project runs locally.
+Authentication works.
+Database connection works.
+Phase 1 — Authentication & User Management
+Goal:
+Allow users to access the platform securely.
+Features:
+Authentication:
+Register
+Login
+Logout
+JWT Refresh
+User Profile:
+Name
+Email
+Settings:
+Account Size
+Default Risk %
+Success Criteria:
+Users can create accounts and log in.
+Phase 2 — Strategy Management
+Goal:
+Allow users to define strategies.
+Features:
+Default Strategies:
+Breakout
+Pullback
+Reversal
+Trend Following
+Scalping
+Range Trading
+Custom Strategies:
+Users can create custom strategies.
+Strategy Settings:
+Description
+Risk Appetite
+Notes
+Success Criteria:
+Users can manage strategies.
+Phase 3 — Trade Planning Engine
+Goal:
+Create trades before execution.
+Features:
+Trade Creation:
+Select Strategy
+Select Market Order
+Select Limit Order
+Inputs:
+Strategy
+Optional Notes
+System Calculates:
+Position Size
+Risk Amount
+Reward Risk Ratio
+Capital Exposure
+Success Criteria:
+Trade planning works without AI.
+Phase 4 — Risk Engine
+Goal:
+Prevent poor risk decisions.
+Features:
+Position Sizing
+Risk Calculations
+Exposure Calculations
+Outputs:
+Risk Amount
+Position Size
+RR Ratio
+Maximum Loss
+Success Criteria:
+Every trade receives risk calculations.
+Phase 5 — Rule Engine
+Goal:
+Protect trader capital.
+Default Rules:
+Max Risk Per Trade
+Daily Loss Limit
+Weekly Loss Limit
+Consecutive Loss Limit
+Outputs:
+PASS
+WARNING
+BLOCK
+Success Criteria:
+Trades are validated before execution.
+Phase 6 — Trade Journal
+Goal:
+Start collecting meaningful data.
+Features:
+Trade Lifecycle:
+Draft
+Open
+Closed
+Trade History
+Trade Notes
+Trade Filtering
+Trade Search
+Success Criteria:
+All trades are stored historically.
+Phase 7 — Analytics Engine
+Goal:
+Generate insights without AI.
+Metrics:
+Win Rate
+Profit Factor
+Expectancy
+Drawdown
+Average R
+Strategy Performance
+Views:
+Weekly Performance
+Monthly Performance
+Strategy Performance
+Success Criteria:
+Users can understand performance trends.
+Phase 8 — Market Context Capture
+Goal:
+Understand why trades worked.
+Automatically Capture:
+ATR
+RSI
+VWAP
+Volume
+Trend
+Session
+Volatility
+Store:
+Market fingerprints.
+Success Criteria:
+Every trade contains contextual market information.
+Phase 9 — Screenshot System
+Goal:
+Create future AI training data.
+Capture:
+Entry:
+Trade Timeframe Chart
+Higher Timeframe Chart
+Exit:
+Trade Timeframe Chart
+Higher Timeframe Chart
+Store:
+Trade ID
+Timestamp
+Screenshot Path
+Success Criteria:
+Screenshots are linked to trades.
+Phase 10 — AI Foundation Layer
+Goal:
+Generate explanations from existing analytics.
+Important:
+AI does NOT calculate.
+AI explains.
+Inputs:
+Analytics
+Trade History
+Market Context
+Outputs:
+Trade Summaries
+Strategy Reviews
+Performance Explanations
+Success Criteria:
+AI provides useful narrative insights.
+Phase 11 — Similar Trade Intelligence
+Goal:
+Find historical matches.
+Workflow:
+Current Trade
+ 
+↓
+ 
+Find Similar Trades
+ 
+↓
+ 
+Calculate Outcomes
+ 
+↓
+ 
+Generate Recommendation
+Outputs:
+Similarity Score
+Historical Win Rate
+Historical R Multiple
+Success Criteria:
+AI identifies historical trade patterns.
+Phase 12 — Behavioral Coaching
+Goal:
+Identify trader mistakes.
+Detect:
+Overtrading
+Revenge Trading
+FOMO Entries
+Rule Violations
+Early Exits
+Outputs:
+Coaching Insights
+Warnings
+Improvement Suggestions
+Success Criteria:
+Users receive personalized behavioral feedback.
+Phase 13 — Strategy Intelligence
+Goal:
+Understand strategy performance.
+Questions Answered:
+Which strategy performs best?
+Which session performs best?
+Which market conditions work best?
+Which conditions should be avoided?
+Outputs:
+Strategy Scorecards
+Success Criteria:
+Users understand when their strategies work.
+Phase 14 — Broker Integration
+Goal:
+Remove manual trade tracking.
+Future Integrations:
+Zerodha Kite
+Dhan
+Angel One
+Binance
+Interactive Brokers
+Capabilities:
+Sync Orders
+Sync Executions
+Sync Closures
+Detect Early Exits
+Success Criteria:
+Trades sync automatically.
+Phase 15 — Real-Time Intelligence
+Goal:
+Live trade monitoring.
+Technology:
+WebSockets
+Capabilities:
+Live Risk Updates
+Live Trade Monitoring
+Real-Time Alerts
+Success Criteria:
+Users receive live guidance.
+Future Phases
+Not MVP:
+Redis
+Celery
+Microservices
+ML Models
+Pattern Recognition
+Vision AI
+Mobile App
+Build Priority
+Must Build First:
+Authentication
+Strategies
+Trade Planning
+Risk Engine
+Rule Engine
+Journal
+Analytics
+Build Later:
+Market Context
+Screenshots
+AI
+Broker Integrations
+Never Reverse This Order.
+Data must exist before intelligence can exist.
+Definition of MVP Success
+The MVP is successful if a trader can:
+Create a strategy
+Plan a trade
+Calculate risk correctly
+Follow risk rules
+Maintain a trading journal
+View analytics
+Receive basic AI insights
+without requiring broker integration or advanced AI.
+The MVP should help traders make better decisions through risk management and historical analysis before attempting advanced intelligence features.

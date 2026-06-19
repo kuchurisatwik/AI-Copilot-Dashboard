@@ -1,0 +1,54 @@
+[project]
+name = "trader-copilot-ai"
+version = "0.1.0"
+description = "Trader Copilot AI - Trading Intelligence & Risk Management Platform"
+requires-python = ">=3.12"
+dependencies = [
+    # Web Framework
+    "fastapi[standard]>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    # Database
+    "sqlalchemy[asyncio]>=2.0.0",
+    "asyncpg>=0.30.0",
+    "alembic>=1.14.0",
+    # Validation & Settings
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    # Authentication
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.0",
+    "bcrypt>=4.0.0",
+    # Logging
+    "structlog>=24.0.0",
+    # HTTP Client (for Binance API)
+    "httpx>=0.27.0",
+    # Date/Time
+    "python-dateutil>=2.9.0",
+    # File uploads
+    "python-multipart>=0.0.12",
+    # AI - Google Gemini
+    "google-generativeai>=0.8.0",
+]
+
+[tool.setuptools]
+packages = ["app", "app.core", "app.models", "app.schemas", "app.repositories", "app.services", "app.api", "app.api.auth", "app.api.strategies", "app.api.trades", "app.api.risk", "app.api.analytics", "app.api.market_context", "app.api.ai", "app.api.screenshots", "app.ai"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.24.0",
+    "httpx>=0.27.0",
+    "ruff>=0.8.0",
+    "mypy>=1.13.0",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
