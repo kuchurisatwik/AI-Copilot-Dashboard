@@ -14,14 +14,13 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
   }, []);
 
   useEffect(() => {
-    // TEMPORARILY DISABLED for UI review without backend
-    // if (mounted && !isAuthenticated) {
-    //   router.push('/login');
-    // }
+    if (mounted && !isAuthenticated) {
+      router.push('/login');
+    }
   }, [isAuthenticated, mounted, router]);
 
-  // Don't render children until we've checked authentication to avoid flashes
-  if (!mounted) {
+  // Don't render children until we've checked authentication to avoid flashes or showing content to unauthenticated users
+  if (!mounted || !isAuthenticated) {
     return (
       <div className="flex h-screen items-center justify-center bg-bg-primary">
         <div className="flex flex-col items-center gap-4 animate-pulse-glow">
